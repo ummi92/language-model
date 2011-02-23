@@ -1,5 +1,5 @@
 package lm;
-
+// That looks good
 public class Test {
 
 	/**
