@@ -40,7 +40,7 @@ public class FileRead {
 		finalw.toArray(finalwords);
 
 		for (int i = 0; i < finalwords.length; i++) {
-			System.out.println(finalwords[i]);
+		//	System.out.println(finalwords[i]);
 
 		}
 		return finalwords;
