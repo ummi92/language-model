@@ -48,7 +48,7 @@ public class UnigramModel {
 			
 			
 		}
-		
+		/*
 	        Set<String> wordSet = unigramModel.keySet();
 	        Iterator<String> iter = wordSet.iterator();
 	        
@@ -58,10 +58,23 @@ public class UnigramModel {
 	        	        	
 	           String word = iter.next();
 	           Unigram unigram = unigramModel.get(word);
-	           unigram.setProbability(unigram.getCount().divide(totalCount));
+	           BigDecimal count = unigram.getCount();
+	           BigDecimal prob = count.divide(totalCount);
+	           unigram.setProbability(prob);
 	          
 	        }
-	        
+	        */
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (String unigram : unigramModel.keySet()) {
+			sb.append(unigram + " " + unigramModel.get(unigram).getCount());
+			sb.append("\n");
+		}
+
+		return sb.toString();
+	}
+	
 }
 
