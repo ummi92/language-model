@@ -14,12 +14,12 @@ public class BigramModel {
 
 	private Map<String, Bigram> bigramModel;
 
-	public BigramModel(String[] vocabulary, String[] corpusContent) {
+	public BigramModel(Map<String, Unigram> vocabulary, String[] corpusContent) {
 		bigramModel = new HashMap<String, Bigram>();
 		populateModel(vocabulary, corpusContent);
 	}
 
-	private void populateModel(String[] vocabulary, String[] tokens) {
+	private void populateModel(Map<String, Unigram> vocabulary, String[] tokens) {
 
 		String lastToken = null;
 		for (int i = 0; i < tokens.length; i++) {
@@ -47,25 +47,25 @@ public class BigramModel {
 			lastToken = token;
 		}
 
-		List<String> allPossibleBigrams = new ArrayList<String>();
-		// add the zeroes
-		for (int i = 0; i < vocabulary.length; i++) {
-			for (int j = 1; j < vocabulary.length; j++) {
-
-				allPossibleBigrams.add(vocabulary[i] + " " + vocabulary[j]);
-			}
-
-		}
-
-		for (String bigram : allPossibleBigrams) {
-			if (!bigramModel.containsKey(bigram)) {
-				Bigram bigramObj = new Bigram();
-				String[] items = bigram.split(" ");
-				bigramObj.setFirst(items[0]);
-				bigramObj.setSecond(items[1]);
-				bigramModel.put(bigram, bigramObj);
-			}
-		}
+		// List<String> allPossibleBigrams = new ArrayList<String>();
+		// // add the zeroes
+		// for (int i = 0; i < vocabulary.size(); i++) {
+		// for (int j = 1; j < vocabulary.size() j++) {
+		//
+		// allPossibleBigrams.add(vocabulary + " " + vocabulary[j]);
+		// }
+		//
+		// }
+		//
+		// for (String bigram : allPossibleBigrams) {
+		// if (!bigramModel.containsKey(bigram)) {
+		// Bigram bigramObj = new Bigram();
+		// String[] items = bigram.split(" ");
+		// bigramObj.setFirst(items[0]);
+		// bigramObj.setSecond(items[1]);
+		// bigramModel.put(bigram, bigramObj);
+		// }
+		// }
 
 	}
 
@@ -99,10 +99,9 @@ public class BigramModel {
 
 	}
 
-	private Bigram generateNextBigram(String prefix,
-			Map<String, List<Bigram>> bigramsByPrefix) {
+	public Bigram generateNextBigram(String prefix) {
 
-		List<Bigram> bigrams = bigramsByPrefix.get(prefix);
+		List<Bigram> bigrams = getBigramsByPrefix(prefix);
 		Collections.sort(bigrams);
 
 		double random = Math.random();

@@ -2,12 +2,12 @@ package lm.objects;
 
 import java.math.BigDecimal;
 
-public class Unigram {
+public class Unigram implements Comparable {
 
 	private String word;
 	private BigDecimal count = BigDecimal.ZERO;
 	private BigDecimal probability = BigDecimal.ZERO;
-	
+
 	public void setWord(String word) {
 		this.word = word;
 	}
@@ -15,7 +15,7 @@ public class Unigram {
 	public String getWord() {
 		return word;
 	}
-	
+
 	public BigDecimal getCount() {
 		return count;
 	}
@@ -36,7 +36,7 @@ public class Unigram {
 		Unigram to = (Unigram) o;
 		return (this.probability.compareTo(to.probability));
 	}
-	
+
 	public String toString() {
 
 		return word;
