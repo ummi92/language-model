@@ -2,7 +2,8 @@ package lm;
 
 import lm.models.BigramModel;
 import lm.models.UnigramModel;
-// That looks good
+import lm.ext.*;
+
 public class Test {
 
 	/**
@@ -27,6 +28,9 @@ public class Test {
 		UnigramModel unigramModel = new UnigramModel(filecontent);
 		System.out.println(unigramModel.toString());
 		
+		System.out.println("----------------------------------------------");
+		SpellChecker spellchecker = new SpellChecker("Test.txt");
+		System.out.println(spellchecker.correct("womed"));
 		
 		
 
