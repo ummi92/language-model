@@ -48,22 +48,19 @@ public class UnigramModel {
 			
 			
 		}
-		/*
+	/*
 	        Set<String> wordSet = unigramModel.keySet();
-	        Iterator<String> iter = wordSet.iterator();
-	        
-	        BigDecimal totalCount = new BigDecimal(size);
-	        
-	        while(iter.hasNext()){
+            BigDecimal totalCount = new BigDecimal(size);
+            	        
+	        for (String word : wordSet){
 	        	        	
-	           String word = iter.next();
 	           Unigram unigram = unigramModel.get(word);
 	           BigDecimal count = unigram.getCount();
 	           BigDecimal prob = count.divide(totalCount);
 	           unigram.setProbability(prob);
 	          
 	        }
-	        */
+	      */ 
 	}
 	
 	public String toString() {
