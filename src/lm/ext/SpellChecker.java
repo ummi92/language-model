@@ -10,19 +10,30 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-class SpellChecker {
+public class SpellChecker {
 
 	private final HashMap<String, Integer> nWords = new HashMap<String, Integer>();
 
-	public SpellChecker(String file) throws IOException {
-		BufferedReader in = new BufferedReader(new FileReader(file));
+	public SpellChecker(String file){
+		BufferedReader in = null;
+		try {
+		in = new BufferedReader(new FileReader(file));
 		Pattern p = Pattern.compile("\\w+");
 		for(String temp = ""; temp != null; temp = in.readLine()){
 			Matcher m = p.matcher(temp.toLowerCase());
 			while(m.find()) nWords.put((temp = m.group()), nWords.containsKey(temp) ? nWords.get(temp) + 1 : 1);
 		}
-		in.close();
+		} catch (IOException exc) {
+			exc.printStackTrace();
+		} finally {
+			try {
+				in.close();
+			} catch (IOException exc) {
+				exc.printStackTrace();
+			}
+		}
 	}
+
 
 	private final ArrayList<String> edits(String word) {
 		ArrayList<String> result = new ArrayList<String>();
@@ -42,9 +53,5 @@ class SpellChecker {
 		for(String s : list) for(String w : edits(s)) if(nWords.containsKey(w)) candidates.put(nWords.get(w),w);
 		return candidates.size() > 0 ? candidates.get(Collections.max(candidates.keySet())) : word;
 	}
-/*
-	public static void main(String args[]) throws IOException {
-		System.out.println((new SpellChecker("C:\\Users\\biswajit\\workspace\\Experiments\\big.txt")).correct("surfacd"));
-	}
-*/
+
 }
