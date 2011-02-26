@@ -2,11 +2,13 @@ package lm.models;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import lm.objects.Bigram;
+import lm.objects.Unigram;
 
 public class BigramModel {
 
@@ -64,6 +66,17 @@ public class BigramModel {
 				bigramModel.put(bigram, bigramObj);
 			}
 		}
+
+	}
+
+	public void setProbabilities(Map<String, Unigram> unigrams) {
+		for (String bigram : bigramModel.keySet()) {
+			String first = bigram.split(" ")[0];
+			BigDecimal probability = bigramModel.get(bigram).getCount().divide(
+					unigrams.get(first).getCount(), 20,
+					BigDecimal.ROUND_HALF_UP);// P(wn/wn-1)=C(wn-1wn)/C(wn-1)
+			bigramModel.get(bigram).setProbability(probability);
+		}
 	}
 
 	public Map<String, Bigram> getBigramModel() {
@@ -84,6 +97,30 @@ public class BigramModel {
 		}
 		return bigrams;
 
+	}
+
+	private Bigram generateNextBigram(String prefix,
+			Map<String, List<Bigram>> bigramsByPrefix) {
+
+		List<Bigram> bigrams = bigramsByPrefix.get(prefix);
+		Collections.sort(bigrams);
+
+		double random = Math.random();
+		BigDecimal randomNrForGeneration = new BigDecimal(random);
+		BigDecimal probForGeneration = BigDecimal.ZERO;
+		Bigram lastBigram = null;
+		for (Bigram bigram : bigrams) {
+			lastBigram = bigram;
+
+			BigDecimal bigramProb = bigram.getProbability();
+			probForGeneration = probForGeneration.add(bigramProb);
+
+			if (randomNrForGeneration.compareTo(probForGeneration) < 0) {
+				return bigram;
+			}
+		}
+
+		return lastBigram;
 	}
 
 	@Override
