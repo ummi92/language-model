@@ -14,9 +14,22 @@ public class BigramModel {
 
 	private Map<String, Bigram> bigramModel;
 
-	public BigramModel(Map<String, Unigram> vocabulary, String[] corpusContent) {
+	/**
+	 * Creates a new BigramModel. If we want to handle unknown then the input
+	 * vocabulary has to handle unknown as well.
+	 * 
+	 * @param vocabulary
+	 * @param corpusContent
+	 * @param handlingUnknown
+	 */
+	public BigramModel(Map<String, Unigram> vocabulary, String[] corpusContent,
+			boolean handlingUnknown) {
 		bigramModel = new HashMap<String, Bigram>();
-		populateModel(vocabulary, corpusContent);
+		if (handlingUnknown) {
+			populateModelHandlingUnknownWord(vocabulary, corpusContent);
+		} else {
+			populateModel(vocabulary, corpusContent);
+		}
 	}
 
 	private void populateModel(Map<String, Unigram> unigrams, String[] tokens) {
@@ -44,8 +57,7 @@ public class BigramModel {
 			}
 			lastToken = token;
 		}
-
-		List<String> allPossibleBigrams = new ArrayList<String>();
+		setProbabilities(unigrams);
 
 		// add the zeroes
 		// for (String first : unigrams.keySet()) {
@@ -62,6 +74,42 @@ public class BigramModel {
 		// }
 		//
 		// }
+
+	}
+
+	private void populateModelHandlingUnknownWord(
+			Map<String, Unigram> unigramsWithUnknown, String[] tokens) {
+
+		int size = tokens.length;
+
+		int trainingSize = 4 * size / 5;
+
+		String lastToken = null;
+		for (int i = 0; i < trainingSize; i++) {
+			String token = tokens[i];
+			// bigrams
+			if (lastToken != null) {
+
+				String bigramAsString = lastToken + " " + token;
+
+				if (bigramModel.containsKey(bigramAsString)) {
+					double count = bigramModel.get(bigramAsString).getCount();
+					bigramModel.get(bigramAsString).setCount(count + 1);
+
+				} else {
+					Bigram bigram = new Bigram();
+					bigram.setFirst(lastToken);
+					bigram.setSecond(token);
+					bigram.setCount(1);
+					bigramModel.put(bigramAsString, bigram);
+				}
+
+			}
+			lastToken = token;
+		}
+
+		// set bigram probabilities
+		setProbabilities(unigramsWithUnknown);
 
 	}
 
