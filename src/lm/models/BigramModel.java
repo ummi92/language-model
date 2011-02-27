@@ -1,11 +1,11 @@
 package lm.models;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import lm.objects.Bigram;
 import lm.objects.Unigram;
@@ -19,7 +19,7 @@ public class BigramModel {
 		populateModel(vocabulary, corpusContent);
 	}
 
-	private void populateModel(Map<String, Unigram> vocabulary, String[] tokens) {
+	private void populateModel(Map<String, Unigram> unigrams, String[] tokens) {
 
 		String lastToken = null;
 		for (int i = 0; i < tokens.length; i++) {
@@ -27,19 +27,17 @@ public class BigramModel {
 			// bigrams
 			if (lastToken != null) {
 
-				String bigramAsString = lastToken + ' ' + token;
+				String bigramAsString = lastToken + " " + token;
 
 				if (bigramModel.containsKey(bigramAsString)) {
-					BigDecimal count = bigramModel.get(bigramAsString)
-							.getCount();
-					bigramModel.get(bigramAsString).setCount(
-							count.add(BigDecimal.ONE));
+					double count = bigramModel.get(bigramAsString).getCount();
+					bigramModel.get(bigramAsString).setCount(count + 1);
 
 				} else {
 					Bigram bigram = new Bigram();
 					bigram.setFirst(lastToken);
 					bigram.setSecond(token);
-					bigram.setCount(BigDecimal.ONE);
+					bigram.setCount(1);
 					bigramModel.put(bigramAsString, bigram);
 				}
 
@@ -47,24 +45,22 @@ public class BigramModel {
 			lastToken = token;
 		}
 
-		// List<String> allPossibleBigrams = new ArrayList<String>();
-		// // add the zeroes
-		// for (int i = 0; i < vocabulary.size(); i++) {
-		// for (int j = 1; j < vocabulary.size() j++) {
+		List<String> allPossibleBigrams = new ArrayList<String>();
+
+		// add the zeroes
+		// for (String first : unigrams.keySet()) {
+		// for (String second : unigrams.keySet()) {
 		//
-		// allPossibleBigrams.add(vocabulary + " " + vocabulary[j]);
-		// }
-		//
-		// }
-		//
-		// for (String bigram : allPossibleBigrams) {
+		// String bigram = first + " " + second;
 		// if (!bigramModel.containsKey(bigram)) {
 		// Bigram bigramObj = new Bigram();
-		// String[] items = bigram.split(" ");
-		// bigramObj.setFirst(items[0]);
-		// bigramObj.setSecond(items[1]);
+		//
+		// bigramObj.setFirst(first);
+		// bigramObj.setCount(0);
 		// bigramModel.put(bigram, bigramObj);
 		// }
+		// }
+		//
 		// }
 
 	}
@@ -72,9 +68,8 @@ public class BigramModel {
 	public void setProbabilities(Map<String, Unigram> unigrams) {
 		for (String bigram : bigramModel.keySet()) {
 			String first = bigram.split(" ")[0];
-			BigDecimal probability = bigramModel.get(bigram).getCount().divide(
-					unigrams.get(first).getCount(), 20,
-					BigDecimal.ROUND_HALF_UP);// P(wn/wn-1)=C(wn-1wn)/C(wn-1)
+			double probability = bigramModel.get(bigram).getCount()
+					/ unigrams.get(first).getCount();// P(wn/wn-1)=C(wn-1wn)/C(wn-1)
 			bigramModel.get(bigram).setProbability(probability);
 		}
 	}
@@ -105,16 +100,16 @@ public class BigramModel {
 		Collections.sort(bigrams);
 
 		double random = Math.random();
-		BigDecimal randomNrForGeneration = new BigDecimal(random);
-		BigDecimal probForGeneration = BigDecimal.ZERO;
+
+		double probForGeneration = 0;
 		Bigram lastBigram = null;
 		for (Bigram bigram : bigrams) {
 			lastBigram = bigram;
 
-			BigDecimal bigramProb = bigram.getProbability();
-			probForGeneration = probForGeneration.add(bigramProb);
+			double bigramProb = bigram.getProbability();
+			probForGeneration = probForGeneration + bigramProb;
 
-			if (randomNrForGeneration.compareTo(probForGeneration) < 0) {
+			if (random < probForGeneration) {
 				return bigram;
 			}
 		}
@@ -122,12 +117,47 @@ public class BigramModel {
 		return lastBigram;
 	}
 
+	/**
+	 * Returns the bigram count. As we dont's store bigrams with count 0 this
+	 * method will check if bigram is in model and if yes will return the stored
+	 * count, if not in model it will check first and second word in bigram in
+	 * the vocabulary: if they both exist it returns 0 otherwise it will return
+	 * -1.
+	 * 
+	 * @param bigram
+	 *            a String representing a bigram
+	 * @param vocabulary
+	 *            a Set of Strings representing the vocabulary
+	 * @return if bigram is in model and if yes will return the stored count, if
+	 *         not in model it will check first and second word in bigram in the
+	 *         vocabulary: if they both exist it returns 0 otherwise it will
+	 *         return -1.
+	 */
+	public double getBigramCount(String bigram, Set<String> vocabulary) {
+		double result = -1;
+		if (bigramModel.containsKey(bigram)) {
+			return bigramModel.get(bigram).getCount();
+		} else {
+			String[] items = bigram.split(" ");
+			String first = items[0];
+			String second = items[1];
+
+			if (vocabulary.contains(first) && vocabulary.contains(second)) {
+				return 0;
+			}
+		}
+		return result;
+	}
+
 	@Override
 	public String toString() {
+
 		StringBuilder sb = new StringBuilder();
 		for (String bigram : bigramModel.keySet()) {
+
 			sb.append(bigram + " " + bigramModel.get(bigram).getCount());
 			sb.append("\n");
+
 		}
 
 		return sb.toString();

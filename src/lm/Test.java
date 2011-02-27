@@ -24,7 +24,7 @@ public class Test {
 		// .split(" ");
 
 		System.out.println("\n----------------------------------------------");
-		UnigramModel unigramModel = new UnigramModel(filecontent);
+		UnigramModel unigramModel = new UnigramModel(filecontent, false);
 		System.out.println(unigramModel.toString());
 
 		System.out.println("\n----------------------------------------------");
