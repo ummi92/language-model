@@ -272,6 +272,20 @@ public class BigramModel {
 		return result;
 	}
 
+	public boolean containsBigram(String bigram) {
+		String[] items = bigram.split(" ");
+		String first = items[0];
+		String second = items[1];
+
+		if (bigramModel.containsKey(bigram)) {
+			return true;
+		} else if (unigramModel.containsKey(first)
+				&& unigramModel.containsKey(second)) {
+			return true;
+		} else
+			return false;
+	}
+
 	@Override
 	public String toString() {
 
