@@ -16,18 +16,18 @@ public class Smoothing {
 		
 		Set<String> wordSet = unigramModel.keySet();
         
-        BigDecimal totalWords = new BigDecimal(wordSet.size());
-		BigDecimal totalCount = BigDecimal.ZERO;
+		double totalWords = wordSet.size();
+        double totalCount = 0;
 		
 		for(String word : wordSet){
-			totalCount.add(unigramModel.get(word).getCount());
+			totalCount = totalCount+unigramModel.get(word).getCount();
 		}
 		
 		for (String word : wordSet) {
 			Unigram unigram = unigramModel.get(word);
-			BigDecimal wordCount = unigram.getCount();
-			unigram.setCount(wordCount.add(BigDecimal.ONE));
-			// calculate new probability
+			double wordCount = unigram.getCount()+1;
+			unigram.setCount(wordCount);
+			unigram.setProbability(wordCount/totalCount+totalWords);
 		}
 
 	}
@@ -40,19 +40,18 @@ public class Smoothing {
 			
 			String prefix = word.substring(0, word.indexOf(" "));
 			List<Bigram> bigrams = model.getBigramsByPrefix(prefix);
-			BigDecimal totalCount = BigDecimal.ZERO;
-			BigDecimal prefixCount = new BigDecimal(bigrams.size());
+			double totalCount = 0;
+			double prefixCount = bigrams.size();
 			
 			for(Bigram bigram : bigrams){
-				totalCount.add(bigram.getCount());
+				totalCount= totalCount + bigram.getCount();
 			}
 			
 			Bigram bigram = bigramModel.get(word);
-			BigDecimal wordCount = bigram.getCount();
-			wordCount.add(BigDecimal.ONE);
+			double wordCount = bigram.getCount()+1;
 			bigram.setCount(wordCount);
-			
-			// calculate new probability
+			bigram.setProbability(wordCount/totalCount+prefixCount);
+		    
 		}
 	}
 	
