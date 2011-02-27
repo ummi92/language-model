@@ -1,6 +1,5 @@
 package lm.objects;
 
-
 public class Bigram implements Comparable {
 	private String first;
 	private String second;
@@ -42,9 +41,11 @@ public class Bigram implements Comparable {
 
 	public int compareTo(Object o) {
 		Bigram to = (Bigram) o;
-		int result=0;
-		if (this.count > to.count) result = 1;
-		else if(this.count < to.count) result = -1;
+		int result = 0;
+		if (this.count > to.count)
+			result = 1;
+		else if (this.count < to.count)
+			result = -1;
 		return (result);
 	}
 
