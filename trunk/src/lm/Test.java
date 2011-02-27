@@ -29,7 +29,7 @@ public class Test {
 
 		System.out.println("\n----------------------------------------------");
 		BigramModel bigramModel = new BigramModel(unigramModel
-				.getUnigramModel(), filecontent);
+				.getUnigramModel(), filecontent, false);
 		bigramModel.setProbabilities(unigramModel.getUnigramModel());
 		System.out.println(bigramModel.toString());
 		System.out.println("\n----------------------------------------------");
