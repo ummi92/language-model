@@ -2,6 +2,7 @@ package lm;
 
 
 import java.util.Map;
+import lm.models.*;
 import lm.objects.*;
 
 public class Perplexity {
@@ -34,6 +35,45 @@ static double computeUnigramPerplexity(Map<String, Unigram> unigramModel, String
 	
 }
 
+static double computeBigramPerplexity(BigramModel bigramModel, String[] testset)
+{
+	double logProbability = 0.0;
+	double totalcount = testset.length;
+	double templog, biperplexity;
+	
+	for(int i = 0; i < testset.length - 1; i++)
+	{
+		if(bigramModel.containsBigram(testset[i] + " " + testset[i+1]))
+		{
+			logProbability += Math.log(bigramModel.getSmoothedBigramProbability(testset[i] + " " + testset[i+1]));
+			break;
+		}
+		else if(bigramModel.containsBigram(testset[i] + " " + "<UNK>"))
+		{
+			logProbability += Math.log(bigramModel.getSmoothedBigramProbability(testset[i] + " " + "<UNK>"));
+			break;
+		}
+		else if(bigramModel.containsBigram("<UNK>" + " " + testset[i+1]))
+		{
+			logProbability += Math.log(bigramModel.getSmoothedBigramProbability("<UNK>" + " " + testset[i+1]));
+			break;
+		}
+		else if(bigramModel.containsBigram("<UNK>" + " " + "<UNK>"))
+		{
+			logProbability += Math.log(bigramModel.getSmoothedBigramProbability("<UNK>" + " " + "<UNK>"));
+			break;
+		}
+	}
+	
+	templog = -1.0 * logProbability;
+	templog = Math.log(templog) - Math.log(totalcount);
+	biperplexity = Math.exp(Math.exp(templog));
+	return biperplexity;
+	
+}
+
+
+/*
 static double computeBigramPerplexity(Map<String, Bigram> bigramModel, String[] testset)
 {
 	double logProbability = 0.0;
@@ -70,6 +110,8 @@ static double computeBigramPerplexity(Map<String, Bigram> bigramModel, String[] 
 	biperplexity = Math.exp(Math.exp(templog));
 	return biperplexity;
 }
+
+*/
 
 /*
 static double computeTrigramPerplexity(Map<String, Trigram> trigramModel, String[] testset)
