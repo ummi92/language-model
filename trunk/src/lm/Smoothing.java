@@ -32,28 +32,28 @@ public class Smoothing {
 
 	}
 	
-	public static void bigramSmoothing(BigramModel model){
-		
-		Map<String, Bigram> bigramModel = model.getBigramModel();
-		
-		for (String word : bigramModel.keySet()) {
-			
-			String prefix = word.substring(0, word.indexOf(" "));
-			List<Bigram> bigrams = model.getBigramsByPrefix(prefix);
-			double totalCount = 0;
-			double prefixCount = bigrams.size();
-			
-			for(Bigram bigram : bigrams){
-				totalCount= totalCount + bigram.getCount();
-			}
-			
-			Bigram bigram = bigramModel.get(word);
-			double wordCount = bigram.getCount()+1;
-			bigram.setCount(wordCount);
-			bigram.setProbability(wordCount/totalCount+prefixCount);
-		    
-		}
-	}
+//	public static void bigramSmoothing(BigramModel model){
+//		
+//		Map<String, Bigram> bigramModel = model.getBigramModel();
+//		
+//		for (String word : bigramModel.keySet()) {
+//			
+//			String prefix = word.substring(0, word.indexOf(" "));
+//			List<Bigram> bigrams = model.getBigramsByPrefix(prefix);
+//			double totalCount = 0;
+//			double prefixCount = bigrams.size();
+//			
+//			for(Bigram bigram : bigrams){
+//				totalCount= totalCount + bigram.getCount();
+//			}
+//			
+//			Bigram bigram = bigramModel.get(word);
+//			double wordCount = bigram.getCount()+1;
+//			bigram.setCount(wordCount);
+//			bigram.setProbability(wordCount/totalCount+prefixCount);
+//		    
+//		}
+//	}
 	
 	
 }

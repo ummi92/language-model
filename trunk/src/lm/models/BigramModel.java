@@ -13,6 +13,9 @@ import lm.objects.Unigram;
 public class BigramModel {
 
 	private Map<String, Bigram> bigramModel;
+	private Map<String, Unigram> unigramModel;
+	private int N; // number of tokens
+	private int V; // vocabulary size
 	private String unKnownWord = "<UNK>";
 
 	/**
@@ -26,11 +29,16 @@ public class BigramModel {
 	public BigramModel(Map<String, Unigram> vocabulary, String[] corpusContent,
 			boolean handlingUnknown) {
 		bigramModel = new HashMap<String, Bigram>();
+		this.unigramModel = vocabulary;
 		if (handlingUnknown) {
+			this.N = corpusContent.length + 1;
+
 			populateModelHandlingUnknownWord(vocabulary, corpusContent);
 		} else {
+			this.N = corpusContent.length;
 			populateModel(vocabulary, corpusContent);
 		}
+		this.V = vocabulary.size();
 	}
 
 	private void populateModel(Map<String, Unigram> unigrams, String[] tokens) {
@@ -59,22 +67,6 @@ public class BigramModel {
 			lastToken = token;
 		}
 		setProbabilities(unigrams);
-
-		// add the zeroes
-		for (String first : unigrams.keySet()) {
-			for (String second : unigrams.keySet()) {
-
-				String bigram = first + " " + second;
-				if (!bigramModel.containsKey(bigram)) {
-					Bigram bigramObj = new Bigram();
-
-					bigramObj.setFirst(first);
-					bigramObj.setCount(0);
-					bigramModel.put(bigram, bigramObj);
-				}
-			}
-
-		}
 
 	}
 
@@ -136,22 +128,6 @@ public class BigramModel {
 		// set bigram probabilities
 		setProbabilities(unigramsWithUnknown);
 
-		// add the zeroes
-		for (String first : unigramsWithUnknown.keySet()) {
-			for (String second : unigramsWithUnknown.keySet()) {
-
-				String bigram = first + " " + second;
-				if (!bigramModel.containsKey(bigram)) {
-					Bigram bigramObj = new Bigram();
-
-					bigramObj.setFirst(first);
-					bigramObj.setCount(0);
-					bigramModel.put(bigram, bigramObj);
-				}
-			}
-
-		}
-
 	}
 
 	public void setProbabilities(Map<String, Unigram> unigrams) {
@@ -163,15 +139,7 @@ public class BigramModel {
 		}
 	}
 
-	public Map<String, Bigram> getBigramModel() {
-		return bigramModel;
-	}
-
-	public void setBigramModel(Map<String, Bigram> bigramModel) {
-		this.bigramModel = bigramModel;
-	}
-
-	public List<Bigram> getBigramsByPrefix(String prefix) {
+	private List<Bigram> getBigramsByPrefix(String prefix) {
 		List<Bigram> bigrams = new ArrayList<Bigram>();
 
 		for (String bigram : bigramModel.keySet()) {
@@ -215,14 +183,13 @@ public class BigramModel {
 	 * 
 	 * @param bigram
 	 *            a String representing a bigram
-	 * @param vocabulary
-	 *            a Set of Strings representing the vocabulary
+	 * 
 	 * @return if bigram is in model and if yes will return the stored count, if
 	 *         not in model it will check first and second word in bigram in the
 	 *         vocabulary: if they both exist it returns 0 otherwise it will
 	 *         return -1.
 	 */
-	public double getBigramCount(String bigram, Set<String> vocabulary) {
+	public double getBigramCount(String bigram) {
 		double result = -1;
 		if (bigramModel.containsKey(bigram)) {
 			return bigramModel.get(bigram).getCount();
@@ -231,8 +198,75 @@ public class BigramModel {
 			String first = items[0];
 			String second = items[1];
 
-			if (vocabulary.contains(first) && vocabulary.contains(second)) {
+			if (unigramModel.keySet().contains(first)
+					&& unigramModel.keySet().contains(second)) {
 				return 0;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the bigram count. As we dont's store bigrams with count 0 this
+	 * method will check if bigram is in model and if yes will return the stored
+	 * count, if not in model it will check first and second word in bigram in
+	 * the vocabulary: if they both exist it returns 0 otherwise it will return
+	 * -1.
+	 * 
+	 * @param bigram
+	 *            a String representing a bigram
+	 * 
+	 * @return if bigram is in model and if yes will return the stored count, if
+	 *         not in model it will check first and second word in bigram in the
+	 *         vocabulary: if they both exist it returns 0 otherwise it will
+	 *         return -1.
+	 */
+	public double getSmoothedBigramCount(String bigram) {
+		double result = -1;
+		if (bigramModel.containsKey(bigram)) {
+			return bigramModel.get(bigram).getCount() + 1;
+		} else {
+			String[] items = bigram.split(" ");
+			String first = items[0];
+			String second = items[1];
+
+			if (unigramModel.keySet().contains(first)
+					&& unigramModel.keySet().contains(second)) {
+				return 1;
+			}
+		}
+		return result;
+	}
+
+	public double getBigramProbability(String bigram) {
+		double result = -1;
+		if (bigramModel.containsKey(bigram)) {
+			return bigramModel.get(bigram).getProbability();
+		} else {
+			String[] items = bigram.split(" ");
+			String first = items[0];
+			String second = items[1];
+
+			if (unigramModel.keySet().contains(first)
+					&& unigramModel.keySet().contains(second)) {
+				return 0;
+			}
+		}
+		return result;
+	}
+
+	public double getSmoothedBigramProbability(String bigram) {
+		double result = -1;
+		if (bigramModel.containsKey(bigram)) {
+			return (bigramModel.get(bigram).getCount() + 1) / (N + V);
+		} else {
+			String[] items = bigram.split(" ");
+			String first = items[0];
+			String second = items[1];
+
+			if (unigramModel.keySet().contains(first)
+					&& unigramModel.keySet().contains(second)) {
+				return 1 / (N + V);
 			}
 		}
 		return result;
