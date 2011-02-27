@@ -61,20 +61,20 @@ public class BigramModel {
 		setProbabilities(unigrams);
 
 		// add the zeroes
-		// for (String first : unigrams.keySet()) {
-		// for (String second : unigrams.keySet()) {
-		//
-		// String bigram = first + " " + second;
-		// if (!bigramModel.containsKey(bigram)) {
-		// Bigram bigramObj = new Bigram();
-		//
-		// bigramObj.setFirst(first);
-		// bigramObj.setCount(0);
-		// bigramModel.put(bigram, bigramObj);
-		// }
-		// }
-		//
-		// }
+		for (String first : unigrams.keySet()) {
+			for (String second : unigrams.keySet()) {
+
+				String bigram = first + " " + second;
+				if (!bigramModel.containsKey(bigram)) {
+					Bigram bigramObj = new Bigram();
+
+					bigramObj.setFirst(first);
+					bigramObj.setCount(0);
+					bigramModel.put(bigram, bigramObj);
+				}
+			}
+
+		}
 
 	}
 
@@ -135,6 +135,22 @@ public class BigramModel {
 
 		// set bigram probabilities
 		setProbabilities(unigramsWithUnknown);
+
+		// add the zeroes
+		for (String first : unigramsWithUnknown.keySet()) {
+			for (String second : unigramsWithUnknown.keySet()) {
+
+				String bigram = first + " " + second;
+				if (!bigramModel.containsKey(bigram)) {
+					Bigram bigramObj = new Bigram();
+
+					bigramObj.setFirst(first);
+					bigramObj.setCount(0);
+					bigramModel.put(bigram, bigramObj);
+				}
+			}
+
+		}
 
 	}
 
