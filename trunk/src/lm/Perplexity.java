@@ -47,16 +47,22 @@ static double computeBigramPerplexity(Map<String, Bigram> bigramModel, String[] 
 			logProbability += Math.log( bigramModel.get(testset[i] + " " + testset[i+1]).getProbability() );
 			break;
 		}
-		else if( bigramModel.containsKey("<UNK>" + " " + testset[i+1]) )
-		{
-			logProbability += Math.log( bigramModel.get("<UNK>" + " " + testset[i+1]).getProbability() );
-			break;
-		}
 		else if( bigramModel.containsKey(testset[i] + " " + "<UNK>") )
 		{
 			logProbability += Math.log( bigramModel.get(testset[i] + " " + "<UNK>").getProbability() );
 			break;
 		}
+		else if( bigramModel.containsKey("<UNK>" + " " + testset[i+1]) )
+		{
+			logProbability += Math.log( bigramModel.get("<UNK>" + " " + testset[i+1]).getProbability() );
+			break;
+		}
+		else if( bigramModel.containsKey("<UNK>" + " " + "<UNK>") )
+		{
+			logProbability += Math.log( bigramModel.get("<UNK>" + " " + "<UNK>").getProbability() );
+			break;
+		}
+		
 	}
 	
 	templog = -1.0 * logProbability;
