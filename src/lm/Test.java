@@ -18,18 +18,17 @@ public class Test {
 			System.out.println(filecontent[i]);
 
 		// System.out.println("----------------------------------------------");
-		// String text = "I am Sam Sam I am I do not like green eggs and ham";
-		// String[] testCorpus = text.split(" ");
-		// String[] vocabulary = "I am Sam do not like green eggs and ham"
-		// .split(" ");
+		// String text =
+		// "I am Sam Sam I am I do not like green eggs and ham I am not woman You like eggs and jam I like Sam";
+		// String[] filecontent = text.split(" ");
 
 		System.out.println("\n----------------------------------------------");
-		UnigramModel unigramModel = new UnigramModel(filecontent, false);
+		UnigramModel unigramModel = new UnigramModel(filecontent, true);
 		System.out.println(unigramModel.toString());
 
 		System.out.println("\n----------------------------------------------");
 		BigramModel bigramModel = new BigramModel(unigramModel
-				.getUnigramModel(), filecontent, false);
+				.getUnigramModel(), filecontent, true);
 		bigramModel.setProbabilities(unigramModel.getUnigramModel());
 		System.out.println(bigramModel.toString());
 		System.out.println("\n----------------------------------------------");
@@ -40,7 +39,7 @@ public class Test {
 		}
 
 		System.out.println("\n----------------------------------------------");
-		String prefix = "When";
+		String prefix = "I";
 		System.out.print(prefix + ' ');
 		for (int i = 0; i < 10; i++) {
 			Bigram bigram = bigramModel.generateNextBigram(prefix);

@@ -13,6 +13,7 @@ import lm.objects.Unigram;
 public class BigramModel {
 
 	private Map<String, Bigram> bigramModel;
+	private String unKnownWord = "<UNK>";
 
 	/**
 	 * Creates a new BigramModel. If we want to handle unknown then the input
@@ -106,6 +107,30 @@ public class BigramModel {
 
 			}
 			lastToken = token;
+		}
+
+		for (int i = 4 * size / 5; i < size; i++) {
+
+			String word = tokens[i];
+
+			if (!unigramsWithUnknown.containsKey(word)) {
+				word = unKnownWord;
+			}
+			String bigramAsString = lastToken + " " + word;
+
+			if (bigramModel.containsKey(bigramAsString)) {
+				double count = bigramModel.get(bigramAsString).getCount();
+				bigramModel.get(bigramAsString).setCount(count + 1);
+
+			} else {
+				Bigram bigram = new Bigram();
+				bigram.setFirst(lastToken);
+				bigram.setSecond(word);
+				bigram.setCount(1);
+				bigramModel.put(bigramAsString, bigram);
+			}
+			lastToken = word;
+
 		}
 
 		// set bigram probabilities
