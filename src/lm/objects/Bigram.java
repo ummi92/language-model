@@ -1,13 +1,12 @@
 package lm.objects;
 
-import java.math.BigDecimal;
 
 public class Bigram implements Comparable {
 	private String first;
 	private String second;
 
-	private BigDecimal count = BigDecimal.ZERO;
-	private BigDecimal probability = BigDecimal.ZERO;
+	private double count = 0;
+	private double probability = 0;
 
 	public String getFirst() {
 		return first;
@@ -25,25 +24,28 @@ public class Bigram implements Comparable {
 		this.second = second;
 	}
 
-	public BigDecimal getCount() {
+	public double getCount() {
 		return count;
 	}
 
-	public void setCount(BigDecimal count) {
+	public void setCount(double count) {
 		this.count = count;
 	}
 
-	public BigDecimal getProbability() {
+	public double getProbability() {
 		return probability;
 	}
 
-	public void setProbability(BigDecimal probability) {
+	public void setProbability(double probability) {
 		this.probability = probability;
 	}
 
 	public int compareTo(Object o) {
 		Bigram to = (Bigram) o;
-		return (this.count.compareTo(to.count));
+		int result=0;
+		if (this.count > to.count) result = 1;
+		else if(this.count < to.count) result = -1;
+		return (result);
 	}
 
 	@Override
