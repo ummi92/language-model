@@ -14,8 +14,7 @@ public class BigramModel {
 
 	private Map<String, Bigram> bigramModel;
 	private Map<String, Unigram> unigramModel;
-	private int N; // number of tokens
-	private int V; // vocabulary size
+
 	private String unKnownWord = "<UNK>";
 
 	/**
@@ -31,14 +30,10 @@ public class BigramModel {
 		bigramModel = new HashMap<String, Bigram>();
 		this.unigramModel = vocabulary;
 		if (handlingUnknown) {
-			this.N = corpusContent.length + 1;
-
 			populateModelHandlingUnknownWord(vocabulary, corpusContent);
 		} else {
-			this.N = corpusContent.length;
 			populateModel(vocabulary, corpusContent);
 		}
-		this.V = vocabulary.size();
 	}
 
 	private void populateModel(Map<String, Unigram> unigrams, String[] tokens) {
@@ -256,20 +251,13 @@ public class BigramModel {
 	}
 
 	public double getSmoothedBigramProbability(String bigram) {
-		double result = -1;
-		if (bigramModel.containsKey(bigram)) {
-			return (bigramModel.get(bigram).getCount() + 1) / (N + V);
-		} else {
-			String[] items = bigram.split(" ");
-			String first = items[0];
-			String second = items[1];
 
-			if (unigramModel.keySet().contains(first)
-					&& unigramModel.keySet().contains(second)) {
-				return 1 / (N + V);
-			}
-		}
-		return result;
+		String prefix = bigram.substring(0, bigram.indexOf(" "));
+
+		double prefixCount = unigramModel.get(prefix).getCount();
+
+		return (getBigramCount(bigram) + 1)
+				/ (prefixCount + unigramModel.size());
 	}
 
 	public boolean containsBigram(String bigram) {
