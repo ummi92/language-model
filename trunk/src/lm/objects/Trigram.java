@@ -3,7 +3,7 @@ package lm.objects;
 public class Trigram {
 
 	private String bigram;
-	private String second;
+	private String third;
 
 	private double count = 0;
 	private double probability = 0;
@@ -14,14 +14,6 @@ public class Trigram {
 
 	public void setBigram(String bigram) {
 		this.bigram = bigram;
-	}
-
-	public String getSecond() {
-		return second;
-	}
-
-	public void setSecond(String second) {
-		this.second = second;
 	}
 
 	public double getCount() {
@@ -40,6 +32,14 @@ public class Trigram {
 		this.probability = probability;
 	}
 
+	public String getThird() {
+		return third;
+	}
+
+	public void setThird(String third) {
+		this.third = third;
+	}
+
 	public int compareTo(Object o) {
 		Trigram to = (Trigram) o;
 		int result = 0;
@@ -53,7 +53,7 @@ public class Trigram {
 	@Override
 	public String toString() {
 
-		return bigram + " " + second;
+		return bigram + " " + third;
 	}
 
 }
