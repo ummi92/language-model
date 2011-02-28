@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import lm.objects.Bigram;
 import lm.objects.Unigram;
@@ -96,6 +95,7 @@ public class BigramModel {
 			lastToken = token;
 		}
 
+		System.out.println("Bigram last token:" + lastToken);
 		for (int i = 4 * size / 5; i < size; i++) {
 
 			String word = tokens[i];
@@ -145,7 +145,7 @@ public class BigramModel {
 		return bigrams;
 
 	}
-	
+
 	public List<Bigram> getBigramsBySuffix(String suffix) {
 		List<Bigram> bigrams = new ArrayList<Bigram>();
 
@@ -210,7 +210,11 @@ public class BigramModel {
 				return 0;
 			}
 		}
-		
+
+		if (result == -1) {
+			throw new RuntimeException(
+					"Bigram Model: getBigramCount -1 should not happen");
+		}
 		return result;
 	}
 
@@ -264,12 +268,13 @@ public class BigramModel {
 	}
 
 	public double getSmoothedBigramProbability(String bigram) {
-        
+
 		String prefix = bigram.substring(0, bigram.indexOf(" "));
 
 		double prefixCount = unigramModel.get(prefix).getCount();
 
-		return (getBigramCount(bigram) + 1)/(prefixCount + unigramModel.size());
+		return (getBigramCount(bigram) + 1)
+				/ (prefixCount + unigramModel.size());
 	}
 
 	public boolean containsBigram(String bigram) {
@@ -298,5 +303,13 @@ public class BigramModel {
 		}
 
 		return sb.toString();
+	}
+
+	public Map<String, Bigram> getBigramModel() {
+		return bigramModel;
+	}
+
+	public void setBigramModel(Map<String, Bigram> bigramModel) {
+		this.bigramModel = bigramModel;
 	}
 }
