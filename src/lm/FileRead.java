@@ -106,7 +106,7 @@ public class FileRead {
 			Matcher m = p.matcher(temp.toLowerCase());
 			while(m.find()){
 				temp = m.group();
-				System.out.println(temp);
+				
 			wordList.add(temp);
 			}
 			}
