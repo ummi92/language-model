@@ -134,11 +134,23 @@ public class BigramModel {
 		}
 	}
 
-	private List<Bigram> getBigramsByPrefix(String prefix) {
+	public List<Bigram> getBigramsByPrefix(String prefix) {
 		List<Bigram> bigrams = new ArrayList<Bigram>();
 
 		for (String bigram : bigramModel.keySet()) {
 			if (bigram.startsWith(prefix)) {
+				bigrams.add(bigramModel.get(bigram));
+			}
+		}
+		return bigrams;
+
+	}
+	
+	public List<Bigram> getBigramsBySuffix(String suffix) {
+		List<Bigram> bigrams = new ArrayList<Bigram>();
+
+		for (String bigram : bigramModel.keySet()) {
+			if (bigram.endsWith(suffix)) {
 				bigrams.add(bigramModel.get(bigram));
 			}
 		}
@@ -198,6 +210,7 @@ public class BigramModel {
 				return 0;
 			}
 		}
+		
 		return result;
 	}
 
@@ -251,13 +264,12 @@ public class BigramModel {
 	}
 
 	public double getSmoothedBigramProbability(String bigram) {
-
+        
 		String prefix = bigram.substring(0, bigram.indexOf(" "));
 
 		double prefixCount = unigramModel.get(prefix).getCount();
 
-		return (getBigramCount(bigram) + 1)
-				/ (prefixCount + unigramModel.size());
+		return (getBigramCount(bigram) + 1)/(prefixCount + unigramModel.size());
 	}
 
 	public boolean containsBigram(String bigram) {
