@@ -6,7 +6,7 @@ import lm.objects.*;
 
 public class Perplexity {
 
-	static double computeUnigramPerplexity(Map<String, Unigram> unigramModel,
+	public static double computeUnigramPerplexity(Map<String, Unigram> unigramModel,
 			String[] testset) {
 		double logProbability = 0.0;
 		double totalcount = testset.length;
@@ -30,48 +30,36 @@ public class Perplexity {
 
 	}
 
-	static double computeBigramPerplexity(BigramModel bigramModel,
+	public static double computeBigramPerplexity(BigramModel bigramModel,
 			String[] testset) {
 		double logProbability = 0.0;
 		double totalcount = testset.length;
 		double templog, biperplexity;
-
+		
 		for (int i = 0; i < testset.length - 1; i++) {
 			if (bigramModel.containsBigram(testset[i] + " " + testset[i + 1])) {
-				System.out.println("Bigram = " + testset[i] + " "
-						+ testset[i + 1]);
-				System.out.println("Probability = "
-						+ bigramModel.getSmoothedBigramProbability(testset[i]
-								+ " " + testset[i + 1]));
+			//	System.out.println("Bigram = " + testset[i] + " "+ testset[i + 1]);
+			//	System.out.println("Probability = "	+ bigramModel.getSmoothedBigramProbability(testset[i]+ " " + testset[i + 1]));
 				logProbability += Math.log(bigramModel
 						.getSmoothedBigramProbability(testset[i] + " "
 								+ testset[i + 1]));
 				continue;
 			} else if (bigramModel.containsBigram(testset[i] + " " + "<UNK>")) {
-				System.out.println("Bigram = " + testset[i] + " " + "<UNK>");
-				System.out.println("Probability = "
-						+ bigramModel.getSmoothedBigramProbability(testset[i]
-								+ " " + "<UNK>"));
-				logProbability += Math.log(bigramModel
-						.getSmoothedBigramProbability(testset[i] + " "
-								+ "<UNK>"));
+			//	System.out.println("Bigram = " + testset[i] + " " + "<UNK>");
+			//	System.out.println("Probability = "	+ bigramModel.getSmoothedBigramProbability(testset[i]+ " " + "<UNK>"));
+				logProbability += Math.log(bigramModel.getSmoothedBigramProbability(testset[i] + " "+ "<UNK>"));
 				continue;
 			} else if (bigramModel.containsBigram("<UNK>" + " "
 					+ testset[i + 1])) {
-				System.out
-						.println("Bigram = " + "<UNK>" + " " + testset[i + 1]);
-				System.out.println("Probability = "
-						+ bigramModel.getSmoothedBigramProbability("<UNK>"
-								+ " " + testset[i + 1]));
+			//	System.out.println("Bigram = " + "<UNK>" + " " + testset[i + 1]);
+			//	System.out.println("Probability = "	+ bigramModel.getSmoothedBigramProbability("<UNK>"+ " " + testset[i + 1]));
 				logProbability += Math.log(bigramModel
 						.getSmoothedBigramProbability("<UNK>" + " "
 								+ testset[i + 1]));
 				continue;
 			} else if (bigramModel.containsBigram("<UNK>" + " " + "<UNK>")) {
-				System.out.println("Bigram = " + "<UNK>" + " " + "<UNK>");
-				System.out.println("Probability = "
-						+ bigramModel.getSmoothedBigramProbability("<UNK>"
-								+ " " + "<UNK>"));
+			//	System.out.println("Bigram = " + "<UNK>" + " " + "<UNK>");
+			//	System.out.println("Probability = "+ bigramModel.getSmoothedBigramProbability("<UNK>"+ " " + "<UNK>"));
 				logProbability += Math.log(bigramModel
 						.getSmoothedBigramProbability("<UNK>" + " " + "<UNK>"));
 				continue;
