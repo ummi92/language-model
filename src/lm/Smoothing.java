@@ -12,7 +12,7 @@ import lm.objects.Unigram;
 
 public class Smoothing {
 
-	public static void unigramSmoothing(HashMap<String, Unigram> unigramModel){
+	public static void unigramSmoothing(Map<String, Unigram> unigramModel){
 		
 		Set<String> wordSet = unigramModel.keySet();
         
@@ -27,7 +27,7 @@ public class Smoothing {
 			Unigram unigram = unigramModel.get(word);
 			double wordCount = unigram.getCount()+1;
 			unigram.setCount(wordCount);
-			unigram.setProbability(wordCount/totalCount+totalWords);
+			unigram.setProbability(wordCount/(totalCount+totalWords));
 		}
 
 	}
