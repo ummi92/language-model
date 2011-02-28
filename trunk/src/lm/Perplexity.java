@@ -30,7 +30,7 @@ public class Perplexity {
 
 	}
 
-	public static double computeBigramPerplexity(BigramModel bigramModel,
+	/*public static double computeBigramPerplexity(BigramModel bigramModel,
 			String[] testset) {
 		double logProbability = 0.0;
 		double totalcount = testset.length;
@@ -43,26 +43,28 @@ public class Perplexity {
 				logProbability += Math.log(bigramModel
 						.getSmoothedBigramProbability(testset[i] + " "
 								+ testset[i + 1]));
-				continue;
-			} else if (bigramModel.containsBigram(testset[i] + " " + "<UNK>")) {
+				
+			}
+			else if (bigramModel.containsBigram(testset[i] + " " + "<UNK>")) {
 			//	System.out.println("Bigram = " + testset[i] + " " + "<UNK>");
 			//	System.out.println("Probability = "	+ bigramModel.getSmoothedBigramProbability(testset[i]+ " " + "<UNK>"));
 				logProbability += Math.log(bigramModel.getSmoothedBigramProbability(testset[i] + " "+ "<UNK>"));
-				continue;
-			} else if (bigramModel.containsBigram("<UNK>" + " "
+				
+			}else if (bigramModel.containsBigram("<UNK>" + " "
 					+ testset[i + 1])) {
-			//	System.out.println("Bigram = " + "<UNK>" + " " + testset[i + 1]);
-			//	System.out.println("Probability = "	+ bigramModel.getSmoothedBigramProbability("<UNK>"+ " " + testset[i + 1]));
-				logProbability += Math.log(bigramModel
-						.getSmoothedBigramProbability("<UNK>" + " "
-								+ testset[i + 1]));
-				continue;
-			} else if (bigramModel.containsBigram("<UNK>" + " " + "<UNK>")) {
+				//	System.out.println("Bigram = " + "<UNK>" + " " + testset[i + 1]);
+				//	System.out.println("Probability = "	+ bigramModel.getSmoothedBigramProbability("<UNK>"+ " " + testset[i + 1]));
+					logProbability += Math.log(bigramModel
+							.getSmoothedBigramProbability("<UNK>" + " "
+									+ testset[i + 1]));
+				
+				}  
+			else if (bigramModel.containsBigram("<UNK>" + " " + "<UNK>")) {
 			//	System.out.println("Bigram = " + "<UNK>" + " " + "<UNK>");
 			//	System.out.println("Probability = "+ bigramModel.getSmoothedBigramProbability("<UNK>"+ " " + "<UNK>"));
 				logProbability += Math.log(bigramModel
 						.getSmoothedBigramProbability("<UNK>" + " " + "<UNK>"));
-				continue;
+		
 			}
 		}
 
@@ -71,69 +73,75 @@ public class Perplexity {
 		biperplexity = Math.exp(templog);
 		return biperplexity;
 
-	}
+	}*/
+	
+	
+	
+	public static double computeBigramPerplexity(BigramModel bigramModel, UnigramModel unigram, String[] testset) {
+		double logProbability = 0.0;
+		double totalcount = testset.length;
+		double templog, biperplexity;
+		
+		String test = testset[0];
+		if(!unigram.getUnigramModel().containsKey(test)) test = "<UNK>";
+		logProbability = Math.log(unigram.getUnigramModel().get(test).getProbability());
 
-	/*
-	 * static double computeBigramPerplexity(Map<String, Bigram> bigramModel,
-	 * String[] testset) { double logProbability = 0.0; double totalcount =
-	 * testset.length; double templog, biperplexity;
-	 * 
-	 * for(int i = 0; i < testset.length - 1; i++) { if(
-	 * bigramModel.containsKey(testset[i] + " " + testset[i+1]) ) {
-	 * logProbability += Math.log( bigramModel.get(testset[i] + " " +
-	 * testset[i+1]).getProbability() ); break; } else if(
-	 * bigramModel.containsKey(testset[i] + " " + "<UNK>") ) { logProbability +=
-	 * Math.log( bigramModel.get(testset[i] + " " + "<UNK>").getProbability() );
-	 * break; } else if( bigramModel.containsKey("<UNK>" + " " + testset[i+1]) )
-	 * { logProbability += Math.log( bigramModel.get("<UNK>" + " " +
-	 * testset[i+1]).getProbability() ); break; } else if(
-	 * bigramModel.containsKey("<UNK>" + " " + "<UNK>") ) { logProbability +=
-	 * Math.log( bigramModel.get("<UNK>" + " " + "<UNK>").getProbability() );
-	 * break; }
-	 * 
-	 * }
-	 * 
-	 * templog = -1.0 * logProbability; templog = Math.log(templog) -
-	 * Math.log(totalcount); biperplexity = Math.exp(Math.exp(templog)); return
-	 * biperplexity; }
-	 */
+		for (int i = 0; i < testset.length - 1; i++) {
+		String first = testset[i];
+		String second = testset[i+1];
+		
 
-	/*
-	 * static double computeTrigramPerplexity(Map<String, Trigram> trigramModel,
-	 * String[] testset) { double logProbability = 0.0; double totalcount =
-	 * testset.length; double templog, triperplexity;
-	 * 
-	 * for(int i = 0; i < testset.length - 2; i++) {
-	 * if(trigramModel.containsKey(testset[i] + " " + testset[i+1] + " " +
-	 * testset[i+2])) { logProbability += Math.log(trigramModel.get(testset[i] +
-	 * " " + testset[i+1] + " " + testset[i+2]).getProbability()); break; } else
-	 * if(trigramModel.containsKey(testset[i] + " " + testset[i+1] + " " +
-	 * "<UNK>")) { logProbability += Math.log(trigramModel.get(testset[i] + " "
-	 * + testset[i+1] + " " + "<UNK>").getProbability()); break; } else
-	 * if(trigramModel.containsKey(testset[i] + " " + "<UNK>" + " " +
-	 * testset[i+2])) { logProbability += Math.log(trigramModel.get(testset[i] +
-	 * " " + "<UNK>" + " " + testset[i+2]).getProbability()); break; } else
-	 * if(trigramModel.containsKey("<UNK>" + " " + testset[i+1] + " " +
-	 * testset[i+2])) { logProbability += Math.log(trigramModel.get("<UNK>" +
-	 * " " + testset[i+1] + " " + testset[i+2]).getProbability()); break; } else
-	 * if(trigramModel.containsKey("<UNK>" + " " + "<UNK>" + " " +
-	 * testset[i+2])) { logProbability += Math.log(trigramModel.get("<UNK>" +
-	 * " " + "<UNK>" + " " + testset[i+2]).getProbability()); break; } else
-	 * if(trigramModel.containsKey("<UNK>" + " " + testset[i+1] + " " +
-	 * "<UNK>")) { logProbability += Math.log(trigramModel.get("<UNK>" + " " +
-	 * testset[i+1] + " " + "<UNK>").getProbability()); break; } else
-	 * if(trigramModel.containsKey(testset[i] + " " + "<UNK>" + " " + "<UNK>"))
-	 * { logProbability += Math.log(trigramModel.get(testset[i] + " " + "<UNK>"
-	 * + " " + "<UNK>").getProbability()); break; } else
-	 * if(trigramModel.containsKey("<UNK>" + " " + "<UNK>" + " " + "<UNK>")) {
-	 * logProbability += Math.log(trigramModel.get("<UNK>" + " " + "<UNK>" + " "
-	 * + "<UNK>").getProbability()); break; }
-	 * 
-	 * }
-	 * 
-	 * templog = -1.0 * logProbability; templog = Math.log(templog) -
-	 * Math.log(totalcount); triperplexity = Math.exp(Math.exp(templog)); return
-	 * triperplexity; }
-	 */
+		if(!unigram.getUnigramModel().containsKey(first)) first = "<UNK>";
+		if(!unigram.getUnigramModel().containsKey(second)) second = "<UNK>";
+		
+		
+		
+		
+		
+
+
+		// System.out.println("Bigram = " + testset[i] + " "+ testset[i + 1]);
+		// System.out.println("Probability = " + bigramModel.getSmoothedBigramProbability(testset[i]+ " " + testset[i + 1]));
+		logProbability += Math.log(bigramModel.getSmoothedBigramProbability(first + " "+ second));
+
+
+		}
+
+		templog = -1.0 * logProbability;
+		templog = templog / totalcount;
+		biperplexity = Math.exp(templog);
+		return biperplexity;
+
+		}
+/*	
+	public static double computeTrigramPerplexity(TrigramModel trigramModel, UnigramModel unigram, String[] testset) {
+		double logProbability = 0.0;
+		double totalcount = testset.length;
+		double templog, triperplexity;
+
+		for (int i = 0; i < testset.length - 2; i++) {
+		String first = testset[i];
+		String second = testset[i+1];
+		String third = testset[i+2];
+
+		if(!unigram.getUnigramModel().containsKey(first)) first = "<UNK>";
+		if(!unigram.getUnigramModel().containsKey(second)) second = "<UNK>";
+		if(!unigram.getUnigramModel().containsKey(third)) third = "<UNK>";
+		
+
+		logProbability += Math.log(trigramModel.getSmoothedTrigramProbability(first + " "+ second + " " + third));
+
+
+		}
+
+		templog = -1.0 * logProbability;
+		templog = templog / totalcount;
+		triperplexity = Math.exp(templog);
+		return triperplexity;
+
+		}
+
+
+*/	
 
 }
