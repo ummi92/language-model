@@ -21,6 +21,7 @@ import lm.objects.Unigram;
 public class SpellChecker {
 
 	private final HashMap<String, Integer> nWords = new HashMap<String, Integer>();
+	HashMap<Double, String> probs = new HashMap<Double, String>();
 	BigramModel bigram = null;
 	private Map<String, Unigram> unigramModel;
 	
@@ -30,9 +31,9 @@ public class SpellChecker {
 		in = new BufferedReader(new FileReader(file));
 		
 		String[] filecontent = FileRead.fileReadLowerCase(file);
-		UnigramModel unigram = new UnigramModel(filecontent, false);
+		UnigramModel unigram = new UnigramModel(filecontent, true);
 		unigramModel = unigram.getUnigramModel();
-		bigram = new BigramModel(unigramModel, filecontent, false);
+		bigram = new BigramModel(unigramModel, filecontent, true);
 		//bigram.setProbabilities(unigramModel);
 		//bigramModel = bigram.getBigramModel();
 		
@@ -80,8 +81,17 @@ public class SpellChecker {
 		}
 		
 		String lastToken = null;
+		StringBuffer sb1 = new StringBuffer();
+		for(int i = 0; i<words.length; i++){
+			sb1.append(words[i]);
+			sb1.append(" ");
+		}
+		//System.out.println(calculateJointProb(words));
+		//probs.put(calculateJointProb(words), sb1.toString());
+		
 		for (int i = 0; i < words.length; i++) {
 			String token = words[i].toLowerCase();
+			
 			
 			if (lastToken != null) {
 
@@ -94,12 +104,19 @@ System.out.println("original string = "+bigramAsString);
                     		ArrayList<String> list = edits(token);
     						List<Bigram> lists = bigram.getBigramsByPrefix(lastToken);
     						HashMap<Double, String> candidates = new HashMap<Double, String>();
-    						for(Bigram s : lists) if(list.contains(s.getSecond())) candidates.put(new Double(s.getProbability()),s.getSecond());
-    						if(candidates.size() > 0) words[i] = candidates.get(Collections.max(candidates.keySet()));
-    						candidates.clear();
+    						for(Bigram s : lists) if(list.contains(s.getSecond())) {
+    							candidates.put(new Double(s.getProbability()),s.getSecond());
+    							addTo(words,i,lastToken,s.getSecond());
+    						}
+    						//if(candidates.size() > 0) words[i] = candidates.get(Collections.max(candidates.keySet()));
+    						//candidates.clear();
     						for(String s : list) for(String w : edits(s)) {
     							double secProb = containSecond(lists,w);
-    							if(secProb >= 0.0) candidates.put(secProb,w);
+    							if(secProb >= 0.0) {
+    								candidates.put(secProb,w);
+    								addTo(words,i,lastToken,w);
+    							}
+    							
     						}
     						words[i] = candidates.size() > 0 ? candidates.get(Collections.max(candidates.keySet())) : token;
                     	 }
@@ -108,12 +125,19 @@ System.out.println("original string = "+bigramAsString);
                         	ArrayList<String> list = edits(lastToken);
     						List<Bigram> lists = bigram.getBigramsBySuffix(token);
     						HashMap<Double, String> candidates = new HashMap<Double, String>();
-    						for(Bigram s : lists) if(list.contains(s.getFirst())) candidates.put(new Double(s.getProbability()),s.getFirst());
-    						if(candidates.size() > 0) words[i] = candidates.get(Collections.max(candidates.keySet()));
-    						candidates.clear();
+    						for(Bigram s : lists) if(list.contains(s.getFirst())) {
+    							candidates.put(new Double(s.getProbability()),s.getFirst());
+    							addTo(words,i,s.getFirst(),token);
+    						}
+    						//if(candidates.size() > 0) words[i] = candidates.get(Collections.max(candidates.keySet()));
+    						//candidates.clear();
     						for(String s : list) for(String w : edits(s)) {
     							double firstProb = containFirst(lists,w);
-    							if(firstProb >= 0.0) candidates.put(firstProb,w);
+    							if(firstProb >= 0.0) {
+    								candidates.put(firstProb,w);
+    								addTo(words,i,w,token);
+    							}
+    							
     						}
     						words[i-1] = candidates.size() > 0 ? candidates.get(Collections.max(candidates.keySet())) : lastToken;
                     	 }
@@ -124,12 +148,19 @@ System.out.println("original string = "+bigramAsString);
 						ArrayList<String> list = edits(token);
 						List<Bigram> lists = bigram.getBigramsByPrefix(lastToken);
 						HashMap<Double, String> candidates = new HashMap<Double, String>();
-						for(Bigram s : lists) if(list.contains(s.getSecond())) candidates.put(new Double(s.getProbability()),s.getSecond());
-						if(candidates.size() > 0) words[i] = candidates.get(Collections.max(candidates.keySet()));
-						candidates.clear();
+						for(Bigram s : lists) if(list.contains(s.getSecond())) {
+							candidates.put(new Double(s.getProbability()),s.getSecond());
+							addTo(words,i,lastToken,s.getSecond());
+						}
+						//if(candidates.size() > 0) words[i] = candidates.get(Collections.max(candidates.keySet()));
+						//candidates.clear();
 						for(String s : list) for(String w : edits(s)) {
 							double secProb = containSecond(lists,w);
-							if(secProb >= 0.0) candidates.put(secProb,w);
+							if(secProb >= 0.0) {
+								candidates.put(secProb,w);
+								addTo(words,i,lastToken,w);
+							}
+							
 						}
 						words[i] = candidates.size() > 0 ? candidates.get(Collections.max(candidates.keySet())) : token;
                 	 }
@@ -138,12 +169,18 @@ System.out.println("original string = "+bigramAsString);
                     	ArrayList<String> list = edits(lastToken);
 						List<Bigram> lists = bigram.getBigramsBySuffix(token);
 						HashMap<Double, String> candidates = new HashMap<Double, String>();
-						for(Bigram s : lists) if(list.contains(s.getFirst())) candidates.put(new Double(s.getProbability()),s.getFirst());
-						if(candidates.size() > 0) words[i] = candidates.get(Collections.max(candidates.keySet()));
-						candidates.clear();
+						for(Bigram s : lists) if(list.contains(s.getFirst())) {
+							candidates.put(new Double(s.getProbability()),s.getFirst());
+							addTo(words,i,s.getFirst(),token);
+						}
+						//if(candidates.size() > 0) words[i] = candidates.get(Collections.max(candidates.keySet()));
+						//candidates.clear();
 						for(String s : list) for(String w : edits(s)) {
 							double firstProb = containFirst(lists,w);
-							if(firstProb >= 0.0) candidates.put(firstProb,w);
+							if(firstProb >= 0.0) {
+								candidates.put(firstProb,w);
+								addTo(words,i,w,token);
+							}
 						}
 						words[i-1] = candidates.size() > 0 ? candidates.get(Collections.max(candidates.keySet())) : lastToken;
                 	 }
@@ -159,6 +196,12 @@ System.out.println("original string = "+bigramAsString);
 			sb.append(words[i]);
 			sb.append(" ");
 		}
+		//System.out.println(sb.toString());
+		//probs.put(calculateJointProb(words), sb.toString());
+		//System.out.println(calculateJointProb(words));
+		//System.out.println(Collections.max(probs.keySet()));
+		//String result = probs.size() > 0 ? probs.get(Collections.max(probs.keySet())) : sb.toString();
+		//probs.clear();
 		return sb.toString();
 	}
 	
@@ -166,7 +209,7 @@ System.out.println("original string = "+bigramAsString);
 		double result = -1;
 		
 		for(Bigram bigram : lists){
-			if (bigram.getFirst().equals(word)) result = bigram.getProbability();
+			if (bigram.getFirst().toLowerCase().equals(word.toLowerCase())) result = bigram.getProbability();
 		}
 		
 		return result;
@@ -176,10 +219,64 @@ System.out.println("original string = "+bigramAsString);
 		double result = -1;
 		
 		for(Bigram bigram : lists){
-			if (bigram.getSecond().equals(word)) result = bigram.getProbability();
+			if (bigram.getSecond().toLowerCase().equals(word.toLowerCase())) result = bigram.getProbability();
 		}
 		
 		return result;
 	}
+	
+	private double calculateJointProb(String[] testset, int index, String lastToken, String token){
+		
+		double logProbability = 0.0;
+		
+		testset[index-1] = lastToken;
+		testset[index] = token;
+		
 
+		return calculateJointProb(testset);
+}
+	
+	private double calculateJointProb(String[] testset){
+		double logProbability = 0.0;
+		for (int i = 0; i < testset.length - 1; i++) {
+			if (bigram.containsBigram(testset[i] + " " + testset[i + 1])) {
+			//	System.out.println("Bigram = " + testset[i] + " "+ testset[i + 1]);
+			//	System.out.println("Probability = "	+ bigramModel.getSmoothedBigramProbability(testset[i]+ " " + testset[i + 1]));
+				logProbability += Math.log(bigram
+						.getSmoothedBigramProbability(testset[i] + " "
+								+ testset[i + 1]));
+				continue;
+			} else if (bigram.containsBigram(testset[i] + " " + "<UNK>")) {
+			//	System.out.println("Bigram = " + testset[i] + " " + "<UNK>");
+			//	System.out.println("Probability = "	+ bigramModel.getSmoothedBigramProbability(testset[i]+ " " + "<UNK>"));
+				logProbability += Math.log(bigram.getSmoothedBigramProbability(testset[i] + " "+ "<UNK>"));
+				continue;
+			} else if (bigram.containsBigram("<UNK>" + " "
+					+ testset[i + 1])) {
+			//	System.out.println("Bigram = " + "<UNK>" + " " + testset[i + 1]);
+			//	System.out.println("Probability = "	+ bigramModel.getSmoothedBigramProbability("<UNK>"+ " " + testset[i + 1]));
+				logProbability += Math.log(bigram
+						.getSmoothedBigramProbability("<UNK>" + " "
+								+ testset[i + 1]));
+				continue;
+			} else if (bigram.containsBigram("<UNK>" + " " + "<UNK>")) {
+			//	System.out.println("Bigram = " + "<UNK>" + " " + "<UNK>");
+			//	System.out.println("Probability = "+ bigramModel.getSmoothedBigramProbability("<UNK>"+ " " + "<UNK>"));
+				logProbability += Math.log(bigram
+						.getSmoothedBigramProbability("<UNK>" + " " + "<UNK>"));
+				continue;
+			}
+		}
+
+		return Math.exp(logProbability);
+	}
+	
+	private void addTo(String[] testset, int index, String lastToken, String token){
+		StringBuffer sb = new StringBuffer();
+		for(int i = 0; i<testset.length; i++){
+			sb.append(testset[i]);
+			sb.append(" ");
+		}
+		probs.put(this.calculateJointProb(testset, index, lastToken, token), sb.toString());
+	}
 }
