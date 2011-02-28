@@ -2,6 +2,8 @@ package lm;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FileRead {
 
@@ -91,6 +93,30 @@ public class FileRead {
 		}
 		
 		return finalwords;
+	}
+	
+	public static String[] newFileRead(String filename){
+		ArrayList<String> wordList = new ArrayList<String>();
+		BufferedReader in = null;
+		try {
+		in = new BufferedReader(new FileReader(filename));
+		Pattern p = Pattern.compile("\\w+");
+		for(String temp = ""; temp != null; temp = in.readLine()){
+			Matcher m = p.matcher(temp.toLowerCase());
+			wordList.add(temp.toLowerCase());
+		}
+		} catch (IOException exc) {
+			exc.printStackTrace();
+		} finally {
+			try {
+				in.close();
+			} catch (IOException exc) {
+				exc.printStackTrace();
+			}
+		}
+		String[] words = new String[wordList.size()];
+		wordList.toArray(words);
+		return words;
 	}
 	
 	public static String[] fileReadLowerCase(String filename) 
