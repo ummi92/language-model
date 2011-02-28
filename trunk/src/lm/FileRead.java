@@ -101,10 +101,15 @@ public class FileRead {
 		try {
 		in = new BufferedReader(new FileReader(filename));
 		Pattern p = Pattern.compile("\\w+");
+		
 		for(String temp = ""; temp != null; temp = in.readLine()){
 			Matcher m = p.matcher(temp.toLowerCase());
-			wordList.add(temp.toLowerCase());
-		}
+			while(m.find()){
+				temp = m.group();
+				System.out.println(temp);
+			wordList.add(temp);
+			}
+			}
 		} catch (IOException exc) {
 			exc.printStackTrace();
 		} finally {
