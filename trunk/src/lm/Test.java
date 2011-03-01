@@ -40,7 +40,7 @@ public class Test {
 				unigramModelForBigram.getUnigramModel(), training, true);
 
 		TrigramModel trigramModel = new TrigramModel(unigramModelForBigram
-				.getUnigramModel(), bigramModelForTrigram.getBigramModel(),
+				.getUnigramModel(), bigramModelForTrigram,
 				training, true);
 		System.out.println("Trigram:" + trigramModel.toString());
 		// System.out.println(bigramModel.toString());
@@ -72,9 +72,13 @@ public class Test {
 				unigramModel.getUnigramModel(), test);
 
 		double bigramPerplexity = Perplexity.computeBigramPerplexity(
-				bigramModel, test);
+				bigramModel, unigramModelForBigram, test);
+
+		double trigramPerplexity = Perplexity.computeTrigramPerplexity(
+				trigramModel, unigramModelForBigram, test);
+
 		System.out.println("Unigram perplexity = " + unigramPerplexity);
 		System.out.println("Bigram perplexity = " + bigramPerplexity);
-
+		System.out.println("Trigram perplexity = " + trigramPerplexity);
 	}
 }

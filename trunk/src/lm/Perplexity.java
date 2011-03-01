@@ -113,7 +113,7 @@ public class Perplexity {
 		return biperplexity;
 
 		}
-/*	
+
 	public static double computeTrigramPerplexity(TrigramModel trigramModel, UnigramModel unigram, String[] testset) {
 		double logProbability = 0.0;
 		double totalcount = testset.length;
@@ -142,6 +142,6 @@ public class Perplexity {
 		}
 
 
-*/	
+
 
 }

@@ -9,22 +9,22 @@ import lm.objects.Unigram;
 
 public class TrigramModel {
 	private Map<String, Trigram> trigramModel;
-	private Map<String, Bigram> bigramModel;
+	private BigramModel bigramModel;
 	private Map<String, Unigram> unigramModel;
 
 	private String unKnownWord = "<UNK>";
 
-	public TrigramModel(Map<String, Unigram> unigrams,
-			Map<String, Bigram> bigrams, String[] corpusContent,
-			boolean handlingUnknown) {
-		unigramModel = new HashMap<String, Unigram>();
-		bigramModel = new HashMap<String, Bigram>();
+	public TrigramModel(Map<String, Unigram> unigrams, BigramModel bigramModel,
+			String[] corpusContent, boolean handlingUnknown) {
+		unigramModel = unigrams;
+		this.bigramModel = bigramModel;
 		trigramModel = new HashMap<String, Trigram>();
 
 		if (!handlingUnknown) {
-			populateModel(unigrams, bigrams, corpusContent);
+			populateModel(unigrams, bigramModel.getBigramModel(), corpusContent);
 		} else {
-			populateModelWithUnknown(unigrams, bigrams, corpusContent);
+			populateModelWithUnknown(unigrams, bigramModel.getBigramModel(),
+					corpusContent);
 		}
 
 	}
@@ -124,6 +124,45 @@ public class TrigramModel {
 					/ bigrams.get(bigram).getCount();// P(wn/wn-1wn-2)=C(wn-2wn-1wn)/C(wn-2wn-1)
 			trigramModel.get(trigram).setProbability(probability);
 		}
+	}
+
+	public double getTrigramCount(String trigram) {
+
+		double result = -1;
+
+		if (trigramModel.containsKey(trigram)) {
+			return trigramModel.get(trigram).getCount();
+		} else {
+			String[] items = trigram.split(" ");
+			String first = items[0];
+			String second = items[1];
+			String third = items[2];
+
+			if (unigramModel.keySet().contains(first)
+					&& unigramModel.keySet().contains(second)
+					&& unigramModel.keySet().contains(third)) {
+				return 0;
+			}
+		}
+
+		if (result == -1) {
+			System.out.println(trigram);
+			throw new RuntimeException(
+					"Trigram Model: getTrigramCount -1 should not happen");
+
+		}
+
+		return result;
+	}
+
+	public double getSmoothedTrigramProbability(String trigram) {
+
+		String prefix = trigram.substring(0, trigram.lastIndexOf(" "));
+
+		double prefixCount = bigramModel.getBigramCount(prefix);
+
+		return (getTrigramCount(trigram) + 1)
+				/ (prefixCount + unigramModel.size());
 	}
 
 	public String toString() {
