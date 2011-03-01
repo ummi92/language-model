@@ -1,6 +1,9 @@
 package lm.models;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lm.objects.Bigram;
@@ -84,8 +87,6 @@ public class TrigramModel {
 			first = second;
 			second = tokens[i];
 		}
-
-		System.out.println("Trigram last token:" + second);
 
 		for (int i = trainingSize; i < size; i++) {
 
@@ -176,6 +177,42 @@ public class TrigramModel {
 		}
 
 		return sb.toString();
+	}
+
+	public List<Trigram> getTrigramsByPrefix(String prefix) {
+		List<Trigram> trigrams = new ArrayList<Trigram>();
+
+		for (String trigram : trigramModel.keySet()) {
+			if (trigram.startsWith(prefix)) {
+				trigrams.add(trigramModel.get(trigram));
+			}
+		}
+		return trigrams;
+
+	}
+
+	public Trigram generateNextTrigram(String prefix) {
+
+		List<Trigram> trigrams = getTrigramsByPrefix(prefix);
+		Collections.sort(trigrams);
+
+		double random = Math.random();
+
+		double probForGeneration = 0;
+		Trigram lastTrigram = null;
+		
+		for (Trigram trigram : trigrams) {
+			lastTrigram = trigram;
+
+			double trigramProb = trigram.getProbability();
+			probForGeneration = probForGeneration + trigramProb;
+
+			if (random < probForGeneration) {
+				return trigram;
+			}
+		}
+
+		return lastTrigram;
 	}
 
 }

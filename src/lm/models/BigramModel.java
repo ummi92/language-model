@@ -95,7 +95,6 @@ public class BigramModel {
 			lastToken = token;
 		}
 
-		System.out.println("Bigram last token:" + lastToken);
 		for (int i = 4 * size / 5; i < size; i++) {
 
 			String word = tokens[i];
