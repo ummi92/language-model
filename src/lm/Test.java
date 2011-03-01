@@ -14,7 +14,7 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 
-		String[] training = FileRead.newFileRead("Dataset3/Train.txt");
+		String[] training = FileRead.newFileRead("Dataset4/Train.txt");
 		// String[] validation = FileRead.fileRead("Dataset3/Test.txt");
 		// String[] training = new String[train.length + validation.length];
 		// System.arraycopy(train, 0, training, 0, train.length);
@@ -94,7 +94,7 @@ public class Test {
 		// System.out.println(spellchecker.correct("womed"));
 
 		System.out.println("\n----------------------------------------------");
-		String[] test = FileRead.newFileRead("Dataset3/Test.txt");
+		String[] test = FileRead.newFileRead("Dataset4/Test.txt");
 		// String testText = "I am Sam";
 		// String[] test = testText.split(" ");
 		double unigramPerplexity = Perplexity.computeUnigramPerplexity(
