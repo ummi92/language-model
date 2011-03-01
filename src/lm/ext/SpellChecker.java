@@ -40,6 +40,7 @@ public class SpellChecker {
 		Pattern p = Pattern.compile("\\w+");
 		for(String temp = ""; temp != null; temp = in.readLine()){
 			Matcher m = p.matcher(temp.toLowerCase());
+		
 			while(m.find()) nWords.put((temp = m.group()), nWords.containsKey(temp) ? nWords.get(temp) + 1 : 1);
 		}
 		} catch (IOException exc) {
@@ -56,10 +57,10 @@ public class SpellChecker {
 
 	private final ArrayList<String> edits(String word) {
 		ArrayList<String> result = new ArrayList<String>();
-		for(int i=0; i < word.length(); ++i) result.add(word.substring(0, i) + word.substring(i+1));
-		for(int i=0; i < word.length()-1; ++i) result.add(word.substring(0, i) + word.substring(i+1, i+2) + word.substring(i, i+1) + word.substring(i+2));
+	//	for(int i=0; i < word.length(); ++i) result.add(word.substring(0, i) + word.substring(i+1));
+	//	for(int i=0; i < word.length()-1; ++i) result.add(word.substring(0, i) + word.substring(i+1, i+2) + word.substring(i, i+1) + word.substring(i+2));
 		for(int i=0; i < word.length(); ++i) for(char c='a'; c <= 'z'; ++c) result.add(word.substring(0, i) + String.valueOf(c) + word.substring(i+1));
-		for(int i=0; i <= word.length(); ++i) for(char c='a'; c <= 'z'; ++c) result.add(word.substring(0, i) + String.valueOf(c) + word.substring(i));
+	//	for(int i=0; i <= word.length(); ++i) for(char c='a'; c <= 'z'; ++c) result.add(word.substring(0, i) + String.valueOf(c) + word.substring(i));
 		return result;
 	}
 
@@ -72,6 +73,7 @@ public class SpellChecker {
 		
 		if(nWords.containsKey(sent.toLowerCase())) return sent;
 		ArrayList<String> list = edits(sent.toLowerCase());
+		for (String s : list) System.out.println(s);
 		HashMap<Integer, String> candidates = new HashMap<Integer, String>();
 		for(String s : list) if(nWords.containsKey(s)) candidates.put(nWords.get(s),s);
 		if(candidates.size() > 0) return candidates.get(Collections.max(candidates.keySet()));
@@ -119,7 +121,8 @@ System.out.println("original string = "+bigramAsString);
     							
     						}
     						words[i] = candidates.size() > 0 ? candidates.get(Collections.max(candidates.keySet())) : token;
-                    	 }
+    						candidates.clear(); 
+                    	}
     					
                         if(unigramModel.containsKey(token)){
                         	ArrayList<String> list = edits(lastToken);
@@ -140,7 +143,8 @@ System.out.println("original string = "+bigramAsString);
     							
     						}
     						words[i-1] = candidates.size() > 0 ? candidates.get(Collections.max(candidates.keySet())) : lastToken;
-                    	 }
+    						candidates.clear(); 
+                        }
                     	
                     }
 				} else {
@@ -163,7 +167,8 @@ System.out.println("original string = "+bigramAsString);
 							
 						}
 						words[i] = candidates.size() > 0 ? candidates.get(Collections.max(candidates.keySet())) : token;
-                	 }
+						candidates.clear(); 
+					}
 					
 					if(unigramModel.containsKey(token)){
                     	ArrayList<String> list = edits(lastToken);
@@ -183,7 +188,8 @@ System.out.println("original string = "+bigramAsString);
 							}
 						}
 						words[i-1] = candidates.size() > 0 ? candidates.get(Collections.max(candidates.keySet())) : lastToken;
-                	 }
+						candidates.clear(); 
+					}
 				}
 
 			}
