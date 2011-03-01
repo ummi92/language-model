@@ -6,7 +6,6 @@ import lm.models.UnigramModel;
 import lm.objects.Bigram;
 import lm.objects.Trigram;
 import lm.objects.Unigram;
-import lm.ext.*;
 
 public class Test {
 
@@ -15,7 +14,7 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 
-		String[] training = FileRead.newFileRead("Dataset4/Train.txt");
+		String[] training = FileRead.newFileRead("Dataset3/Train.txt");
 		// String[] validation = FileRead.fileRead("Dataset3/Test.txt");
 		// String[] training = new String[train.length + validation.length];
 		// System.arraycopy(train, 0, training, 0, train.length);
@@ -28,20 +27,20 @@ public class Test {
 		// String[] training = text.split(" ");
 
 		System.out.println("\n----------------------------------------------");
-		UnigramModel unigramModel = new UnigramModel(training, true);
+		UnigramModel unigramModel = new UnigramModel(training, false);
 		Smoothing.unigramSmoothing(unigramModel.getUnigramModel());
 
 		// System.out.println(unigramModel.toString());
 
 		System.out.println("\n----------------------------------------------");
-		UnigramModel unigramModelForBigram = new UnigramModel(training, true);
+		UnigramModel unigramModelForBigram = new UnigramModel(training, false);
 		BigramModel bigramModel = new BigramModel(unigramModelForBigram
 				.getUnigramModel(), training, true);
 		BigramModel bigramModelForTrigram = new BigramModel(
-				unigramModelForBigram.getUnigramModel(), training, true);
+				unigramModelForBigram.getUnigramModel(), training, false);
 
 		TrigramModel trigramModel = new TrigramModel(unigramModelForBigram
-				.getUnigramModel(), bigramModelForTrigram, training, true);
+				.getUnigramModel(), bigramModelForTrigram, training, false);
 		// System.out.println("Trigram:" + trigramModel.toString());
 
 		System.out.println("\n----------------------------------------------");
@@ -74,22 +73,38 @@ public class Test {
 			System.out.print(trigram.getThird() + ' ');
 		}
 
+		System.out.println("\n----------------------------------------------");
+		UnigramModel unigramModel2 = new UnigramModel(training, true);
+		Smoothing.unigramSmoothing(unigramModel2.getUnigramModel());
+
+		// System.out.println(unigramModel.toString());
+
+		System.out.println("\n----------------------------------------------");
+		UnigramModel unigramModelForBigram2 = new UnigramModel(training, true);
+		BigramModel bigramModel2 = new BigramModel(unigramModelForBigram2
+				.getUnigramModel(), training, true);
+		BigramModel bigramModelForTrigram2 = new BigramModel(
+				unigramModelForBigram2.getUnigramModel(), training, true);
+
+		TrigramModel trigramModel2 = new TrigramModel(unigramModelForBigram2
+				.getUnigramModel(), bigramModelForTrigram2, training, true);
+		// System.out.println("Trigram:" + trigramModel.toString());
 		// System.out.println("\n----------------------------------------------");
 		// SpellChecker spellchecker = new SpellChecker("Dataset4/Test.txt");
 		// System.out.println(spellchecker.correct("womed"));
 
 		System.out.println("\n----------------------------------------------");
-		String[] test = FileRead.newFileRead("Dataset4/Test.txt");
+		String[] test = FileRead.newFileRead("Dataset3/Test.txt");
 		// String testText = "I am Sam";
 		// String[] test = testText.split(" ");
 		double unigramPerplexity = Perplexity.computeUnigramPerplexity(
-				unigramModel.getUnigramModel(), test);
+				unigramModel2.getUnigramModel(), test);
 
 		double bigramPerplexity = Perplexity.computeBigramPerplexity(
-				bigramModel, unigramModelForBigram, test);
+				bigramModel2, unigramModelForBigram2, test);
 
 		double trigramPerplexity = Perplexity.computeTrigramPerplexity(
-				trigramModel, unigramModelForBigram, test);
+				trigramModel2, unigramModelForBigram2, test);
 
 		System.out.println("Unigram perplexity = " + unigramPerplexity);
 		System.out.println("Bigram perplexity = " + bigramPerplexity);
