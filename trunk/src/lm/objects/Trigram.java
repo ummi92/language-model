@@ -1,6 +1,6 @@
 package lm.objects;
 
-public class Trigram {
+public class Trigram implements Comparable {
 
 	private String bigram;
 	private String third;
