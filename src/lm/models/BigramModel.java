@@ -243,7 +243,7 @@ public class BigramModel {
 
 			if (unigramModel.keySet().contains(first)
 					&& unigramModel.keySet().contains(second)) {
-				return 1;
+				return .01;
 			}
 		}
 		return result;
@@ -272,8 +272,8 @@ public class BigramModel {
 
 		double prefixCount = unigramModel.get(prefix).getCount();
 
-		return (getBigramCount(bigram) + 1)
-				/ (prefixCount + unigramModel.size());
+		return (getBigramCount(bigram) + .01)
+				/ (prefixCount + (.01)*unigramModel.size());
 	}
 
 	public boolean containsBigram(String bigram) {
